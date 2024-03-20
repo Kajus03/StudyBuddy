@@ -27,6 +27,7 @@ public class User : IUser, IEquatable<User>
 
     public string PasswordHash { get; set; } = string.Empty;
 
+    public bool IsActive { get; set; } = false;
     public UserFlags Flags { get; set; }
 
     public UserTraits Traits { get; set; } = new();
