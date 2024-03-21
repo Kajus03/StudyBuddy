@@ -1,5 +1,4 @@
 ﻿"use strict";
-
 let senderId = document.getElementById("userId").value;
 let receiverId = document.getElementById("receiverId").value;
 
@@ -40,7 +39,27 @@ connection.on("ReceiveMessage", function (user, message) {
     messageList.appendChild(messageContainer);
     scrollToBottom();
 });
+// Listen for the UserActive message
+connection.on("UserActive", function(userId) {
+    // Update the user's status to active (green dot)
+    updateUserStatus(userId, "green");
+});
 
+// Listen for the UserInactive message
+connection.on("UserInactive", function(userId) {
+    // Update the user's status to inactive (red dot)
+    updateUserStatus(userId, "red");
+});
+
+function updateUserStatus(userId, statusColor) {
+    // Find the element that displays the user's status
+    let statusElement = document.getElementById("status-" + userId);
+
+    if (statusElement) {
+        // Update the element to show the specified status color
+        statusElement.style.backgroundColor = statusColor;
+    }
+}
 function createMessageContainer(user) {
     let messageContainer = document.createElement("div");
     messageContainer.classList.add(user === userId.value ? "chat-message-right" : "chat-message-left", "pb-4");

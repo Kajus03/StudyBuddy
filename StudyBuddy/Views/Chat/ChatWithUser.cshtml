@@ -4,7 +4,7 @@
     ViewBag.Title = "Chat";
     Layout = "_Layout";
 }
-
+<script src="https://cdnjs.cloudflare.com/ajax/libs/microsoft-signalr/3.1.7/signalr.min.js"></script>
 <input type="hidden" id="userId" value="@Model.CurrentUser.Id"/>
 <input type="hidden" id="userName" value="@Model.CurrentUser.Username"/>
 <input type="hidden" id="receiverId" value="@Model.OtherUser.Id"/>
@@ -12,7 +12,14 @@
 <input type="hidden" id="senderAvatar" value="@Model.CurrentUser.Traits.AvatarPath"/>
 <input type="hidden" id="receiverAvatar" value="@Model.OtherUser.Traits.AvatarPath"/>
 <input type="hidden" id="groupName" value="@Model.GroupName"/>
-
+<style>
+    .status-dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background-color: red; 
+}
+</style>
 <div class="container vh-100 d-flex flex-column">
     <div class="card min-vh-100 d-flex flex-column">
         <div class="row flex-grow-1">
@@ -57,6 +64,7 @@
                         <div class="position-relative">
                             <!-- Display the receiver's avatar and name -->
                             <img src="@Model.OtherUser.Traits.AvatarPath" class="rounded-circle me-1" alt="@Model.OtherUser.Username" width="40" height="40">
+                            <div id="status-@Model.OtherUser.Id" class="status-dot"></div>
                         </div>
                         <div class="flex-grow-1 px-3">
                             <strong>@Model.OtherUser.Username</strong>
