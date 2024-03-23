@@ -1,5 +1,6 @@
 using System.Text.RegularExpressions;
 using Markdig;
+using StudyBuddy.API.Data.Repositories.BlockingRepository;
 using StudyBuddy.API.Data.Repositories.UserRepository;
 using StudyBuddy.API.Models;
 using StudyBuddy.Shared.Abstractions;
@@ -13,11 +14,13 @@ namespace StudyBuddy.API.Services.UserService;
 public partial class UserService : IUserService
 {
     private readonly IUserRepository _userRepository;
+    private readonly IBlockingRepository _blockingRepository;
     private readonly ILogger<UserService> _logger;
 
-    public UserService(IUserRepository userRepository, ILogger<UserService> logger)
+    public UserService(IUserRepository userRepository, IBlockingRepository blockingRepository, ILogger<UserService> logger)
     {
         _userRepository = userRepository;
+        _blockingRepository = blockingRepository;
         _logger = logger;
     }
 
@@ -155,6 +158,21 @@ public partial class UserService : IUserService
 
     public async Task UserSeenAsync(UserId userId, UserId otherUserId) =>
         await _userRepository.UserSeenAsync(userId, otherUserId);
+
+    public async Task<bool> BlockUser(UserId blockingUserId, UserId UserToBeBlockedId)
+    {
+        return await _blockingRepository.BlockUser(blockingUserId, UserToBeBlockedId);
+    }
+
+    public async Task<bool> UnblockUser(UserId blockingUserId, UserId UserToBeBlockedId)
+    {
+        return await _blockingRepository.UnblockUser(blockingUserId, UserToBeBlockedId);
+    }
+
+    public async Task<IEnumerable<User>> GetBlockedUsers(UserId id)
+    {
+        return await _blockingRepository.getBlockedUsers(id);
+    }
 
     [GeneratedRegex("^[A-Za-z0-9]+([A-Za-z0-9]*|[._-]?[A-Za-z0-9]+)*$")]
     private static partial Regex UsernameRegex();
