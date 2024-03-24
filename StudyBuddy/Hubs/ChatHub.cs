@@ -10,7 +10,34 @@ public class ChatHub : Hub
     private readonly IHttpClientFactory _clientFactory;
 
     public ChatHub(IHttpClientFactory clientFactory) => _clientFactory = clientFactory;
+    private static HashSet<Guid> activeUsers = new HashSet<Guid>();
 
+    public override async Task OnDisconnectedAsync(Exception exception)
+    {
+        HttpContext? httpContext = Context.GetHttpContext();
+
+        if (httpContext is null)
+        {
+            throw new NullReferenceException("HttpContext is null");
+        }
+
+        string sender = httpContext.Request.Query["sender"]!;
+        string receiver = httpContext.Request.Query["receiver"]!;
+
+        if (!string.IsNullOrEmpty(sender) && Guid.TryParse(sender, out Guid senderGuid))
+        {
+            // Mark the user as inactive and notify other users
+            activeUsers.Remove(senderGuid);
+
+            if (Guid.TryParse(receiver, out Guid receiverGuid))
+            {
+                Guid groupName = ConversationIdHelper.GetGroupId(senderGuid, receiverGuid);
+                await Clients.Group(groupName.ToString()).SendAsync("UserInactive", senderGuid);
+            }
+        }
+
+        await base.OnDisconnectedAsync(exception);
+    }
     public override async Task OnConnectedAsync()
     {
         HttpContext? httpContext = Context.GetHttpContext();
@@ -34,6 +61,15 @@ public class ChatHub : Hub
 
             // Add the current connection to the conversation group
             await Groups.AddToGroupAsync(Context.ConnectionId, groupName.ToString());
+
+            // Send a "UserActive" message to the group
+            activeUsers.Add(senderGuid);
+
+            // Send a "UserActive" message for each active user
+            foreach (Guid activeUser in activeUsers)
+            {
+                await Clients.Group(groupName.ToString()).SendAsync("UserActive", activeUser);
+            }
         }
 
         await base.OnConnectedAsync();
