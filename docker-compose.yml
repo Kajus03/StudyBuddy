@@ -23,6 +23,15 @@
     environment:
       ASPNETCORE_URLS: "http://*:80"
 
+  studybuddy.api.tests:
+    image: studybuddy.api.tests
+    build:
+      context: .
+      dockerfile: Tests/StudyBuddy.API.Tests/Dockerfile
+    depends_on:
+      - studybuddy.api
+      - db
+
   db:
     image: postgres
     ports:
