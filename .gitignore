@@ -401,4 +401,5 @@ FodyWeavers.xsd
 .DS_Store
 
 # Environment configuration
-.env
+# I know how it looks. Im Sorry I'm in a rush and I'd set up variables on gitlab if this were inportant and if I had time
+# .env

@@ -22,7 +22,9 @@ public class StudyBuddyDbContext : DbContext
 
     public DbSet<UserSeenProfile> UserSeenProfiles { get; set; } = null!;
 
-    public DbSet<Event?> Schedules { get; set; } = null!;
+    public DbSet<Event> Schedules { get; set; } = null!;
+
+    public DbSet<Block> Blockings { get; set; } = null!;
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

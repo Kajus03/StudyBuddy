@@ -33,7 +33,7 @@ public class AuthenticationMiddleware
         {
             // Make a request to the API to get user details
             UserId userId = UserId.From(userIdGuid);
-
+            Console.WriteLine(userId);
             var response = await httpClient.GetAsync($"api/v1/user/{userId}");
             if (response.IsSuccessStatusCode)
             {

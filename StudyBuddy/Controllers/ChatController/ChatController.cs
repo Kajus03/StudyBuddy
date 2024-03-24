@@ -25,6 +25,16 @@ public class ChatController : Controller
         _clientFactory = clientFactory;
     }
 
+    public async Task<IActionResult> BlockUserAsync(ChatBlockViewModel block)
+    {
+        HttpClient httpClient = _clientFactory.CreateClient("StudyBuddy.API");
+
+        var responseCurrentUser = await httpClient.PostAsync($"{block.BlockedUser}/user-blocked/{block.BlockedUser}", null);
+        responseCurrentUser.EnsureSuccessStatusCode();
+
+        return RedirectToAction("Chat");
+    }
+
     public async Task<IActionResult> ChatAsync()
     {
         UserId currentUserId = (UserId)_userSessionService.GetCurrentUserId()!;

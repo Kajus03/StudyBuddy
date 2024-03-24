@@ -1,6 +1,7 @@
 ﻿using FluentAssertions;
 using Microsoft.Extensions.Logging;
 using NSubstitute;
+using StudyBuddy.API.Data.Repositories.BlockingRepository;
 using StudyBuddy.API.Data.Repositories.UserRepository;
 using StudyBuddy.API.Services.UserService;
 using StudyBuddy.Shared.Abstractions;
@@ -13,15 +14,17 @@ namespace StudyBuddyTests.Services;
 public class UserServiceTests
 {
     private readonly IUserRepository _userRepository;
+    private readonly IBlockingRepository _blockingRepository;
     private readonly ILogger<UserService> _logger;
     private readonly UserService _sut;
 
     public UserServiceTests()
     {
         _userRepository = Substitute.For<IUserRepository>();
+        _blockingRepository = Substitute.For<IBlockingRepository>();
         _logger = Substitute.For<ILogger<UserService>>();
 
-        _sut = new UserService(_userRepository, _logger);
+        _sut = new UserService(_userRepository, _blockingRepository, _logger);
     }
 
     private static List<User> GenerateUsers()

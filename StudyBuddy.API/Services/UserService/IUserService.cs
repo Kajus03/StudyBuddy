@@ -20,4 +20,7 @@ public interface IUserService
     Task<bool> IsUserSeenAsync(UserId userId, UserId otherUserId);
     Task UserSeenAsync(UserId userId, UserId otherUserId);
     Task UpdateAsync(UserId userId, UpdateUserDto updateUserDto);
+    Task<bool> BlockUser(UserId blockingUserId, UserId UserToBeBlockedId);
+    Task<bool> UnblockUser(UserId blockingUserId, UserId UserToBeBlockedId);
+    Task<IEnumerable<User>> GetBlockedUsers(UserId id);
 }

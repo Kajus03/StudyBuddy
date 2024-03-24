@@ -3,6 +3,7 @@ using StudyBuddy.API.Services.UserService;
 using StudyBuddy.Shared.Abstractions;
 using StudyBuddy.Shared.DTOs;
 using StudyBuddy.Shared.Exceptions;
+using StudyBuddy.Shared.Models;
 using StudyBuddy.Shared.ValueObjects;
 
 namespace StudyBuddy.API.Controllers.UserController;
@@ -155,5 +156,38 @@ public class UserController : ControllerBase
     {
         await _userService.UserSeenAsync(UserId.From(userId), UserId.From(otherUserId));
         return Ok();
+    }
+
+    [HttpPost("{blockingUserId:guid}/user-blocked/{UserToBeBlockedId:guid}")]
+    public async Task<IActionResult> BlockUser(Guid blockingUserId, Guid UserToBeBlockedId)
+    {
+        bool userBlocked = await _userService.BlockUser(UserId.From(blockingUserId), UserId.From(UserToBeBlockedId));
+        if (userBlocked)
+        {
+            return Ok();
+        }
+        return BadRequest();
+    }
+
+    [HttpDelete("{blockingUserId:guid}/user-unblocked/{UserToBeBlockedId:guid}")]
+    public async Task<IActionResult> UnblockUser(Guid blockingUserId, Guid UserToBeBlockedId)
+    {
+        bool userBlocked = await _userService.UnblockUser(UserId.From(blockingUserId), UserId.From(UserToBeBlockedId));
+        if (userBlocked)
+        {
+            return Ok();
+        }
+        return BadRequest();
+    }
+
+    [HttpGet("{id:guid}/get-blocked-users")]
+    public async Task<IActionResult> GetBlockedUsers(Guid id)
+    {
+        IEnumerable<User> usersBlocked = await _userService.GetBlockedUsers(UserId.From(id));
+        if (usersBlocked != null)
+        {
+            return Ok(usersBlocked);
+        }
+        return BadRequest();
     }
 }

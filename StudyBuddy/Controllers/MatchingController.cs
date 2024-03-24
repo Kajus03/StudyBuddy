@@ -73,9 +73,16 @@ public class MatchingController : Controller
 
         List<User> allUsers = users.Where(u => u.Id != currentUser.Id).ToList();
 
-        List<IUser> unseenUsers = new();
+        bool useHobbiesFilter = currentUser.Hobbies != null && currentUser.Hobbies.Any();
 
-        foreach (User user in allUsers)
+        List<User> filteredUsers = allUsers.Where(user =>
+            user.Traits.Subject == currentUser.Traits.Subject &&
+            (!useHobbiesFilter || (user.Hobbies != null && user.Hobbies.Intersect(currentUser.Hobbies).Any()))
+            ).ToList();
+
+        List<IUser> unseenFilteredUsers = new();
+
+        foreach (User user in filteredUsers)
         {
             var responseIsUserSeen =
                 await httpClient.GetAsync($"api/v1/user/{currentUser.Id}/has-seen-user/{user.Id}");
@@ -84,16 +91,16 @@ public class MatchingController : Controller
 
             if (!isUserSeen)
             {
-                unseenUsers.Add(user);
+                unseenFilteredUsers.Add(user);
             }
         }
 
         IUser? randomUser = null;
 
-        if (unseenUsers.Any())
+        if (unseenFilteredUsers.Any())
         {
             Random rnd = new();
-            randomUser = unseenUsers[rnd.Next(unseenUsers.Count)];
+            randomUser = unseenFilteredUsers[rnd.Next(unseenFilteredUsers.Count)];
 
             var responseUserSeen =
                 await httpClient.PostAsync($"api/v1/user/{currentUser.Id}/user-seen/{randomUser.Id}", null);
