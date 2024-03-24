@@ -28,7 +28,10 @@
                                     </a>
                                     <div class="fw-bold flex-grow-1 ms-3 user-name">
                                         @user.Username
-                                    </div>
+                                    </div >
+									<button class="blocker-btn" user-id="@Model.CurrentUser.Id.ToString()" user-to-block="@user.Id">
+										Block
+									</button>
                                 </div>
                             </li>
                         }
@@ -53,3 +56,36 @@
 </div>
 
 <script src="~/js/search.js"></script>
+<script>
+	// Add click event listener to the buttons with class blocker-btn
+	document.querySelectorAll('.blocker-btn').forEach(button => {
+		button.addEventListener('click', function () {
+			// Get the user id from data attribute
+			const userId = this.getAttribute('user-id');
+			const userToBlockId = this.getAttribute('user-to-block');
+			console.log(userId, userToBlockId)
+			// Make AJAX request to block the user
+			fetch(`http://localhost:8100/api/v1/user/${userId}/user-blocked/${userToBlockId
+}`, {
+				method: 'POST',
+				headers: {
+					'Content-Type': 'application/json'
+				},
+				// You can add a request body if necessary
+				// body: JSON.stringify({}),
+			})
+				.then(response => {
+					if (!response.ok) {
+						throw new Error('Failed to block user');
+					}
+					// Handle success if needed
+					console.log('User blocked successfully');
+					location.reload();
+				})
+				.catch(error => {
+					// Handle error
+					console.error(error.message);
+				});
+		});
+	});
+</script>

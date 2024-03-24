@@ -1,3 +1,4 @@
+using StudyBuddy.API.Data.Repositories.BlockingRepository;
 using StudyBuddy.API.Data.Repositories.ChatRepository;
 using StudyBuddy.API.Data.Repositories.MatchRepository;
 using StudyBuddy.API.Data.Repositories.SchedulingRepository;
@@ -9,6 +10,7 @@ public static class ServiceCollectionExtensions
 {
     public static IServiceCollection AddRepositories(this IServiceCollection services)
     {
+        services.AddScoped<IBlockingRepository, BlockingRepository.BlockingRepository>();
         services.AddScoped<IUserRepository, UserRepository.UserRepository>();
         services.AddScoped<IMatchRepository, MatchRepository.MatchRepository>();
         services.AddScoped<IMatchRequestRepository, MatchRequestRepository>();

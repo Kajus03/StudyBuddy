@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using StudyBuddy.API.Services.MatchingService;
+using StudyBuddy.API.Services.UserService;
 using StudyBuddy.Shared.DTOs;
 using StudyBuddy.Shared.Models;
 using StudyBuddy.Shared.ValueObjects;
@@ -11,9 +12,13 @@ namespace StudyBuddy.API.Controllers.MatchingController;
 public class MatchingController : ControllerBase
 {
     private readonly IMatchingService _matchingService;
+    private readonly IUserService _userService;
 
-    public MatchingController(IMatchingService matchingService) => _matchingService = matchingService;
-
+    public MatchingController(IMatchingService matchingService, IUserService userService)
+    {
+        _matchingService = matchingService;
+        _userService = userService;
+    }
     [HttpPost("match-users")]
     public async Task<IActionResult> MatchUsers([FromBody] MatchDto matchDto)
     {
@@ -31,7 +36,13 @@ public class MatchingController : ControllerBase
     [HttpGet("match-history/{userId:guid}")]
     public async Task<IActionResult> GetMatchHistory(Guid userId)
     {
+        UserId matchedUser = UserId.From(userId);
+        IEnumerable<User> blocked = await _userService.GetBlockedUsers(matchedUser);
+
+        List<UserId> blockedIds = blocked.Select(user => user.Id).ToList();
+
         IEnumerable<Match> matchHistory = await _matchingService.GetMatchHistoryAsync(UserId.From(userId));
+        matchHistory = matchHistory.Where(m => (m.User1Id == matchedUser && !blockedIds.Contains(m.User2Id)) || (m.User2Id == matchedUser && !blockedIds.Contains(m.User1Id))).ToList();
         return Ok(matchHistory);
     }
 
