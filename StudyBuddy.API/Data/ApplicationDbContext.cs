@@ -26,6 +26,10 @@ public class StudyBuddyDbContext : DbContext
 
     public DbSet<Block> Blockings { get; set; } = null!;
 
+    public DbSet<SystemBlock> SystemBlocks { get; set; } = null!;
+
+    public DbSet<SystemBlockReason> SystemBlockReasons { get; set; } = null!;
+
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);

@@ -68,10 +68,11 @@ $ docker-compose build
 $ docker-compose up
 ```
 
-3. Open a second terminal and run the following command to enable hot reloading:
+3. Open a second and third terminal and run the following command to enable hot reloading:
 
 ``` bash
-$ dotnet watch
+$ dotnet watch -p StudyBuddy.API 
+$ dotnet watch -p StudyBuddy 
 ```
 
 This will automatically update the project when code changes occur.
