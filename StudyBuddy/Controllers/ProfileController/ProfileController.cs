@@ -82,16 +82,17 @@ public class ProfileController : Controller
         return RedirectToAction("CreateProfile");
     }
 
-
     public async Task<IActionResult> Login(string? username, string? password)
     {
         // Authenticate the user
         if (username == null || password == null)
         {
-            return View();
+            TempData["ErrorMessage"] = "Username and password are required";
+            return View("Login");
         }
 
-        if (!await _userSessionService.AuthenticateUser(username, password))
+        bool isAuthenticated = await _userSessionService.AuthenticateUser(username, password);
+        if (!isAuthenticated)
         {
             TempData["ErrorMessage"] = "Invalid username or password";
             return RedirectToAction("Login");
@@ -105,9 +106,27 @@ public class ProfileController : Controller
             SameSite = SameSiteMode.Strict,
             Secure = true
         };
-        Response.Cookies.Append("UserId", _userSessionService.GetCurrentUserId().ToString()!, cookieOptions);
 
-        return RedirectToAction("RandomProfile", "Matching");
+        IUser? user = await _userSessionService.GetUser(username);
+        if (user == null)
+        {
+            TempData["ErrorMessage"] = "User not found";
+            return RedirectToAction("Login");
+        }
+
+        if (user.Flags.HasFlag(UserFlags.Admin))
+        {
+            return RedirectToAction("Index", "Admin");
+        }
+        else if (user.Flags.HasFlag(UserFlags.Registered))
+        {
+            return RedirectToAction("RandomProfile", "Matching");
+        }
+        else
+        {
+            TempData["ErrorMessage"] = "Access Denied";
+            return RedirectToAction("Login");
+        }
     }
 
     [CustomAuthorize]

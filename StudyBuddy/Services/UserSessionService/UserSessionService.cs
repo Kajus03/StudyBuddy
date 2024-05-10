@@ -15,6 +15,20 @@ public class UserSessionService : IUserSessionService
     public UserId? GetCurrentUserId() => _currentUserId;
 
     public void SetCurrentUser(UserId userId) => _currentUserId = userId;
+   public async Task<IUser?> GetUser(string username)
+    {
+        HttpClient httpClient = _httpClientFactory.CreateClient("StudyBuddy.API");
+        var response = await httpClient.GetAsync($"api/v1/user/by-username/{username}");
+
+        if (!response.IsSuccessStatusCode)
+        {
+            return null; 
+        }
+
+        IUser? user = await response.Content.ReadFromJsonAsync<User>();
+
+        return user;
+    }
 
     public async Task<bool> AuthenticateUser(string username, string password)
     {
