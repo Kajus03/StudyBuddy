@@ -1,3 +1,11 @@
+@model List<StudyBuddy.Controllers.AdminController.UserWithBlockStatus>
+@using StudyBuddy.Shared.Models
+
+
+@{
+    Layout = "_AdminLayout";
+    ViewBag.Title = "Admin Dashboard";
+}
 <!DOCTYPE html>
 <html>
 <head>
@@ -33,34 +41,19 @@
                         </tr>
                     </thead>
                     <tbody>
-                        <tr>
-                            <td>Giacomo Guilizzoni</td>
-                            <td>40</td>
-                            <td>Active</td>
-                            <td><button class="btn btn-warning">Block</button><button class="btn btn-danger">Delete</button></td>
-                            <td>-</td>
-                        </tr>
-                        <tr>
-                            <td>Marco Botton</td>
-                            <td>38</td>
-                            <td>Blocked</td>
-                            <td><button class="btn btn-success">Unblock</button><button class="btn btn-danger">Delete</button></td>
-                            <td>22:53:01</td>
-                        </tr>
-                        <tr>
-                            <td>Mariah Maclachlan</td>
-                            <td>41</td>
-                            <td>Active</td>
-                            <td><button class="btn btn-warning">Block</button><button class="btn btn-danger">Delete</button></td>
-                            <td>-</td>
-                        </tr>
-                        <tr>
-                            <td>Valerie Liberty</td>
-                            <td>42</td>
-                            <td>Active</td>
-                            <td><button class="btn btn-warning">Block</button><button class="btn btn-danger">Delete</button></td>
-                            <td>-</td>
-                        </tr>
+                        @foreach (var item in Model)
+                        {
+                            <tr>
+                                <td>@item.User.Username</td>
+                                <td>@item.User.Id</td>
+                                <td>@(item.IsBlocked ? "Blocked" : "Active")</td>
+                                <td>
+                                    <button class="btn btn-warning">Block</button>
+                                    <button class="btn btn-danger">Delete</button>
+                                </td>
+                                <td>-</td>
+                            </tr>
+                        }
                     </tbody>
                 </table>
             </div>
@@ -88,7 +81,6 @@
                 data: {
                     labels: ['Blocked users', 'Active users'],
                     datasets: [{
-                        label: '# of Users',
                         data: [blockedCount, activeCount],
                         backgroundColor: [
                             'rgba(255, 99, 132, 0.2)',
@@ -106,6 +98,9 @@
                         y: {
                             beginAtZero: true
                         }
+                    },
+                    legend: {
+                        display: false 
                     }
                 }
             });
