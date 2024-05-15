@@ -9,4 +9,6 @@ public interface IUserSessionService
     void SetCurrentUser(UserId userId);
     Task<bool> AuthenticateUser(string username, string password);
     Task<IUser?> GetUser(string username);
+    void SetCurrentUsername(string username);
+    string? GetCurrentUsername();
 }

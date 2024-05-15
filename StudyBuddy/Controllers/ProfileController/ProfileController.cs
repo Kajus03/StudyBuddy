@@ -106,6 +106,7 @@ public class ProfileController : Controller
             SameSite = SameSiteMode.Strict,
             Secure = true
         };
+        Response.Cookies.Append("UserId", _userSessionService.GetCurrentUserId().ToString()!, cookieOptions);
 
         IUser? user = await _userSessionService.GetUser(username);
         if (user == null)

@@ -1,7 +1,3 @@
-@{
-    Layout = null;
-}
-
 <!DOCTYPE html>
 <html>
 <head>
@@ -72,32 +68,47 @@
     </div>
 
     <script>
-        const ctx = document.getElementById('myChart').getContext('2d');
-        const myChart = new Chart(ctx, {
-            type: 'bar',
-            data: {
-                labels: ['Blocked users', 'Active users'],
-                datasets: [{
-                    label: '# of Users',
-                    data: [12, 19],
-                    backgroundColor: [
-                        'rgba(255, 99, 132, 0.2)',
-                        'rgba(54, 162, 235, 0.2)'
-                    ],
-                    borderColor: [
-                        'rgba(255, 99, 132, 1)',
-                        'rgba(54, 162, 235, 1)'
-                    ],
-                    borderWidth: 1
-                }]
-            },
-            options: {
-                scales: {
-                    y: {
-                        beginAtZero: true
+        document.addEventListener('DOMContentLoaded', function () {
+            const tableRows = document.querySelectorAll('table tbody tr');
+            let activeCount = 0;
+            let blockedCount = 0;
+
+            tableRows.forEach(row => {
+                const state = row.cells[2].textContent;
+                if (state === 'Active') {
+                    activeCount++;
+                } else if (state === 'Blocked') {
+                    blockedCount++;
+                }
+            });
+
+            const ctx = document.getElementById('myChart').getContext('2d');
+            const myChart = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: ['Blocked users', 'Active users'],
+                    datasets: [{
+                        label: '# of Users',
+                        data: [blockedCount, activeCount],
+                        backgroundColor: [
+                            'rgba(255, 99, 132, 0.2)',
+                            'rgba(54, 162, 235, 0.2)'
+                        ],
+                        borderColor: [
+                            'rgba(255, 99, 132, 1)',
+                            'rgba(54, 162, 235, 1)'
+                        ],
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    scales: {
+                        y: {
+                            beginAtZero: true
+                        }
                     }
                 }
-            }
+            });
         });
     </script>
 </body>

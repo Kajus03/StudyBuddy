@@ -9,10 +9,13 @@ public class UserSessionService : IUserSessionService
     private readonly IHttpClientFactory _httpClientFactory;
 
     private UserId? _currentUserId;
+    private string? _currentUsername;
 
     public UserSessionService(IHttpClientFactory httpClientFactory) => _httpClientFactory = httpClientFactory;
 
     public UserId? GetCurrentUserId() => _currentUserId;
+    public string? GetCurrentUsername() => _currentUsername;
+    public void SetCurrentUsername(string username) => _currentUsername = username;
 
     public void SetCurrentUser(UserId userId) => _currentUserId = userId;
    public async Task<IUser?> GetUser(string username)
@@ -46,6 +49,7 @@ public class UserSessionService : IUserSessionService
             return false;
         }
 
+        SetCurrentUsername(username);
         SetCurrentUser(user.Id);
         return true;
     }
