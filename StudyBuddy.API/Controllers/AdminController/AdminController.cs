@@ -46,7 +46,7 @@ namespace StudyBuddy.API.Controllers.AdminController
             return Ok(await _systemBlockService.CreateSystemBlockAsync(request));
         }
 
-        [HttpDelete("{id:guid}")]
+        [HttpDelete("user/{id:guid}")]
         public async Task<IActionResult> DeleteUser(Guid id)
         {
             await _userService.DeleteUser(UserId.From(id));
