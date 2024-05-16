@@ -2,7 +2,9 @@
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using StudyBuddy.API.Services.SystemBlockService;
+using StudyBuddy.API.Services.UserService;
 using StudyBuddy.Shared.DTOs.systemBlockDtos;
+using StudyBuddy.Shared.ValueObjects;
 
 namespace StudyBuddy.API.Controllers.AdminController
 {
@@ -12,9 +14,11 @@ namespace StudyBuddy.API.Controllers.AdminController
     public class AdminController : ControllerBase
     {
         private readonly ISystemBlockService _systemBlockService;
+        private readonly IUserService _userService;
 
-        public AdminController(ISystemBlockService systemBlockService)
+        public AdminController(ISystemBlockService systemBlockService, IUserService userService)
         {
+            _userService = userService;
             _systemBlockService = systemBlockService;
         }
 
@@ -36,10 +40,17 @@ namespace StudyBuddy.API.Controllers.AdminController
             return Ok(await _systemBlockService.RemoveSystemBlockAsync(id));
         }
 
-        [HttpPost("create")]
+        [HttpPost("")]
         public async Task<IActionResult> CreateSystemBlock(SystemBlockRequest request)
         {
             return Ok(await _systemBlockService.CreateSystemBlockAsync(request));
         }
+
+        [HttpDelete("user/{id:guid}")]
+        public async Task<IActionResult> DeleteUser(Guid id)
+        {
+            await _userService.DeleteUser(UserId.From(id));
+            return Ok();
+        } 
     }
 }
