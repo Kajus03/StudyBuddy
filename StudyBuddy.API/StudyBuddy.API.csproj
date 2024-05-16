@@ -26,7 +26,6 @@
         <PackageReference Include="Vogen" Version="3.0.21" />
     </ItemGroup>
     <ItemGroup>
-        <Folder Include="Controllers\AdminController\" />
         <Folder Include="Data\Migrations\" />
         <Folder Include="Data\Repositories\ChatRepository\" />
         <Folder Include="Data\Repositories\MatchRepository\" />

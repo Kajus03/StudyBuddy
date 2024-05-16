@@ -179,4 +179,8 @@ public partial class UserService : IUserService
 
     [GeneratedRegex(".{8,}")]
     private static partial Regex PasswordRegex();
+    public async Task DeleteUser(UserId id)
+    {
+        await _userRepository.DeleteAsync(id);
+    }
 }

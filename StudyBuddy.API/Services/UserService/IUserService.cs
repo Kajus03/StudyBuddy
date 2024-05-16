@@ -23,4 +23,5 @@ public interface IUserService
     Task<bool> BlockUser(UserId blockingUserId, UserId UserToBeBlockedId);
     Task<bool> UnblockUser(UserId blockingUserId, UserId UserToBeBlockedId);
     Task<IEnumerable<User>> GetBlockedUsers(UserId id);
+    Task DeleteUser(UserId id);
 }

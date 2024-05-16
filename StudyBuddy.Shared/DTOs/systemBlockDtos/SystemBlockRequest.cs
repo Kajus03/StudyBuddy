@@ -10,7 +10,8 @@ namespace StudyBuddy.Shared.DTOs.systemBlockDtos
 {
     public class SystemBlockRequest
     {
-        public Guid BlockedUserId { get; set; }
-        public required SystemBlockReasonRequest SystemBlockReason { get; set; }
+        [Required] public Guid BlockedUserId { get; set; }
+        public DateTime? BlockedUntil { get; set; }
+        [Required] public required SystemBlockReasonRequest SystemBlockReason { get; set; }
     }
 }

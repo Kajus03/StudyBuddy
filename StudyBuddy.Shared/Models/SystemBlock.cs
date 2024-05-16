@@ -14,6 +14,7 @@ namespace StudyBuddy.Shared.Models
         [Key] public Guid Id { get; set; }
         [Required] public UserId BlockedUserId { get; set; }
         [Required] public Guid SystemBlockReasonId { get; set; }
+        public DateTime? BlockedUntil { get; set; }
         public User? BlockedUser { get; set; }
         public SystemBlockReason? SystemBlockReason { get; set; }
 
@@ -26,7 +27,8 @@ namespace StudyBuddy.Shared.Models
                 Id = Guid.NewGuid(),
                 BlockedUserId = UserId.From(request.BlockedUserId),
                 SystemBlockReasonId = reason.Id,
-                SystemBlockReason = reason
+                SystemBlockReason = reason,
+                BlockedUntil = request.BlockedUntil
             };
         }
 
@@ -36,6 +38,7 @@ namespace StudyBuddy.Shared.Models
             {
                 Id = block.Id,
                 BlockedUserId = block.BlockedUserId,
+                BlockedUntil = block.BlockedUntil,
                 SystemBlockReason = block.SystemBlockReason != null ? SystemBlockReason.toDto(block.SystemBlockReason) : null
             };
         }
