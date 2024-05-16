@@ -9,9 +9,27 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <meta name="viewport" content="width=device-width" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Dashboard</title>
     <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" rel="stylesheet" />
+    <style>
+        .duration-cell {
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            max-width: 150px;
+        }
+
+        .center-text {
+            text-align: center;
+        }
+
+        .form-group-center {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+    </style>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
@@ -24,13 +42,17 @@
         </div>
         <div class="row mt-3">
             <div class="col-md-12">
-                <div class="form-group">
-                    <input type="radio" name="userFilter" value="blocked" id="blockedUsers">
-                    <label for="blockedUsers">Blocked users</label>
-                    <input type="radio" name="userFilter" value="active" id="activeUsers">
-                    <label for="activeUsers">Active users</label>
+                <div class="form-group form-group-center">
+                    <div class="form-check form-check-inline">
+                        <input type="checkbox" class="form-check-input" name="userFilter" value="blocked" id="blockedUsers">
+                        <label class="form-check-label" for="blockedUsers">Blocked users</label>
+                    </div>
+                    <div class="form-check form-check-inline">
+                        <input type="checkbox" class="form-check-input" name="userFilter" value="active" id="activeUsers">
+                        <label class="form-check-label" for="activeUsers">Active users</label>
+                    </div>
                 </div>
-                <table class="table">
+                <table class="table center-text">
                     <thead>
                         <tr>
                             <th>Name</th>
@@ -51,7 +73,7 @@
                                     <button class="btn btn-warning">Block</button>
                                     <button class="btn btn-danger">Delete</button>
                                 </td>
-                                <td>-</td>
+                                <td class="duration-cell center-text">@(item.IsBlocked ? item.BlockedUntil?.ToString("G") ?? "-" : "-")</td>
                             </tr>
                         }
                     </tbody>
@@ -62,6 +84,9 @@
 
     <script>
         document.addEventListener('DOMContentLoaded', function () {
+            const blockedCheckbox = document.getElementById('blockedUsers');
+            const activeCheckbox = document.getElementById('activeUsers');
+
             const tableRows = document.querySelectorAll('table tbody tr');
             let activeCount = 0;
             let blockedCount = 0;
@@ -79,17 +104,11 @@
             const myChart = new Chart(ctx, {
                 type: 'bar',
                 data: {
-                    labels: ['Blocked users', 'Active users'],
+                    labels: [],
                     datasets: [{
-                        data: [blockedCount, activeCount],
-                        backgroundColor: [
-                            'rgba(255, 99, 132, 0.2)',
-                            'rgba(54, 162, 235, 0.2)'
-                        ],
-                        borderColor: [
-                            'rgba(255, 99, 132, 1)',
-                            'rgba(54, 162, 235, 1)'
-                        ],
+                        data: [],
+                        backgroundColor: [],
+                        borderColor: [],
                         borderWidth: 1
                     }]
                 },
@@ -99,11 +118,42 @@
                             beginAtZero: true
                         }
                     },
-                    legend: {
-                        display: false 
+                    plugins: {
+                        legend: {
+                            display: false
+                        }
                     }
                 }
             });
+
+            function updateChart() {
+                myChart.data.labels = [];
+                myChart.data.datasets[0].data = [];
+                myChart.data.datasets[0].backgroundColor = [];
+                myChart.data.datasets[0].borderColor = [];
+
+                if (blockedCheckbox.checked) {
+                    myChart.data.labels.push('Blocked users');
+                    myChart.data.datasets[0].data.push(blockedCount);
+                    myChart.data.datasets[0].backgroundColor.push('rgba(255, 99, 132, 0.2)');
+                    myChart.data.datasets[0].borderColor.push('rgba(255, 99, 132, 1)');
+                }
+                if (activeCheckbox.checked) {
+                    myChart.data.labels.push('Active users');
+                    myChart.data.datasets[0].data.push(activeCount);
+                    myChart.data.datasets[0].backgroundColor.push('rgba(54, 162, 235, 0.2)');
+                    myChart.data.datasets[0].borderColor.push('rgba(54, 162, 235, 1)');
+                }
+                myChart.update();
+            }
+
+            blockedCheckbox.addEventListener('change', updateChart);
+            activeCheckbox.addEventListener('change', updateChart);
+
+            // Initialize chart with both datasets
+            blockedCheckbox.checked = true;
+            activeCheckbox.checked = true;
+            updateChart();
         });
     </script>
 </body>
