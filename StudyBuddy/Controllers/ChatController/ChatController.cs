@@ -11,6 +11,7 @@ using StudyBuddy.Shared.ValueObjects;
 namespace StudyBuddy.Controllers.ChatController;
 
 [CustomAuthorize]
+[CustomBlockAuthorize]
 public class ChatController : Controller
 {
     private readonly IHubContext<ChatHub> _hubContext;

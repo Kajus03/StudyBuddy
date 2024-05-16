@@ -24,6 +24,7 @@ builder.Services.AddMvc();
 builder.Services.AddSignalR();
 
 builder.Services.AddScoped<CustomAuthorizeAttribute>();
+builder.Services.AddScoped<CustomBlockAuthorizeAttribute>();
 
 builder.Services.AddScoped<IUserSessionService, UserSessionService>();
 

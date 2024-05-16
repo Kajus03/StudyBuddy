@@ -1,3 +1,4 @@
+using Markdig.Syntax;
 using Microsoft.AspNetCore.Mvc;
 using StudyBuddy.Attributes;
 using StudyBuddy.Models;
@@ -135,6 +136,7 @@ public class ProfileController : Controller
     public IActionResult Logout()
     {
         Response.Cookies.Delete("UserId");
+        Response.Cookies.Delete("Username");
 
         return RedirectToAction("Index", "Home");
     }

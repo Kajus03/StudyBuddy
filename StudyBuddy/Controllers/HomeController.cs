@@ -1,9 +1,11 @@
 ﻿using System.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
+using StudyBuddy.Attributes;
 using StudyBuddy.Models;
 
 namespace StudyBuddy.Controllers;
 
+[CustomBlockAuthorize]
 public class HomeController : Controller
 {
     private readonly ILogger<HomeController> _logger;
