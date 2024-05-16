@@ -68,7 +68,7 @@ namespace StudyBuddy.Controllers
         {
             public User User { get; set; }
             public bool IsBlocked { get; set; }
-            public Guid BlockId { get; set; } // Add BlockId to track the block
+            public Guid BlockId { get; set; } 
         }
 
         [HttpPost]

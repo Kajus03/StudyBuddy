@@ -4,7 +4,7 @@
 }
 
 <div class="container d-flex flex-column justify-content-center align-items-center" style="height: 60vh;">
-    <div class="text-center">
+     <div class="text-center">
         <h1 class="display-4">You have been blocked.</h1>
         <p class="lead">
             @if (ViewData["BlockReason"] != null)
@@ -12,11 +12,11 @@
                 <span>Your account was suspended for: <strong>@ViewData["BlockReason"]</strong></span>
             }
         </p>
-        <p class="mt-3 mb-0">
+        <p class="lead">
             @if(ViewData["BlockTime"] != null){
-                <span>Block Time:<strong>@ViewData["BlockTime"]</strong></span>
+                <span>You are blocked until: <strong>@ViewData["BlockTime"]</strong></span>
             }
         </p>
-        <p class="mt-3 mb-0">Please contact the administrator for more details.</p>
+        <p class="lead">Please contact the administrator for more details.</p>
     </div>
 </div>

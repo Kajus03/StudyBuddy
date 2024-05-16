@@ -86,7 +86,11 @@ public class ProfileController : Controller
     public async Task<IActionResult> Login(string? username, string? password)
     {
         // Authenticate the user
-        if (username == null || password == null)
+        if (username == null && password == null)
+        {
+            return View("Login");
+        }
+        else if (username == null || password == null)
         {
             TempData["ErrorMessage"] = "Username and password are required";
             return View("Login");
