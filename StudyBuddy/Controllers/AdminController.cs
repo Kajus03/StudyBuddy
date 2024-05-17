@@ -33,6 +33,7 @@ namespace StudyBuddy.Controllers
         {
             var client = _httpClientFactory.CreateClient("StudyBuddy.API");
 
+            // Fetch users
             var userResponse = await client.GetAsync("/api/v1/user");
             if (!userResponse.IsSuccessStatusCode)
             {
@@ -87,12 +88,10 @@ namespace StudyBuddy.Controllers
             {
                 var errorContent = await response.Content.ReadAsStringAsync();
                 _logger.LogError("Failed to block user: {Content}", errorContent);
-                TempData["ErrorMessage"] = "Failed to block user.";
                 return RedirectToAction("Index");
             }
 
             _logger.LogInformation("User blocked successfully: {UserId}", blockRequest.BlockedUserId);
-            TempData["SuccessMessage"] = "User blocked successfully";
             return RedirectToAction("Index");
         }
 
@@ -107,12 +106,10 @@ namespace StudyBuddy.Controllers
             {
                 var errorContent = await response.Content.ReadAsStringAsync();
                 _logger.LogError("Failed to unblock user: {Content}", errorContent);
-                TempData["ErrorMessage"] = "Failed to unblock user.";
                 return RedirectToAction("Index");
             }
 
             _logger.LogInformation("User unblocked successfully: {BlockId}", blockId);
-            TempData["SuccessMessage"] = "User unblocked successfully";
             return RedirectToAction("Index");
         }
     }

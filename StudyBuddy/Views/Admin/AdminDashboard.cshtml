@@ -28,12 +28,6 @@
             justify-content: center;
             align-items: center;
         }
-    </style>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
-    <style>
         .modal-dialog-centered {
             display: flex;
             align-items: center;
@@ -43,7 +37,31 @@
         .modal-content {
             margin: auto;
         }
+
+        .d-flex {
+            display: flex;
+        }
+
+        .align-items-center {
+            align-items: center;
+        }
+
+        .mr-2 {
+            margin-right: .5rem;
+        }
+
+        .ml-2 {
+            margin-left: 1rem;
+        }
+
+        .date-input {
+            width: 50%; 
+        }
     </style>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
 </head>
 <body>
     <div class="container">
@@ -116,13 +134,15 @@
                     <div class="invalid-feedback">
                         Please enter a reason for blocking.
                     </div>
-                    <input type="date" class="form-control mt-2" id="blockUntilInput" placeholder="Block until (optional)" onchange="checkDate()">
-                    <div class="invalid-feedback" id="blockUntilError">
-                        Date cannot be in the past.
-                    </div>
-                    <div class="form-check mt-2">
-                        <input type="checkbox" class="form-check-input" id="indefiniteCheck" onchange="toggleIndefinite()">
-                        <label class="form-check-label" for="indefiniteCheck">Block Indefinitely</label>
+                    <div class="d-flex align-items-center mt-2">
+                        <input type="date" class="form-control date-input" id="blockUntilInput" placeholder="Block until (optional)" onchange="checkDate()">
+                        <div class="invalid-feedback" id="blockUntilError" style="display: none;">
+                            Date cannot be in the past.
+                        </div>
+                        <div class="form-check ml-2">
+                            <input type="checkbox" class="form-check-input" id="indefiniteCheck" onchange="toggleIndefinite()">
+                            <label class="form-check-label" for="indefiniteCheck"> Block Indefinitely</label>
+                        </div>
                     </div>
                 </div>
                 <div class="modal-footer">
@@ -309,7 +329,6 @@
             blockedCheckbox.addEventListener('change', updateChart);
             activeCheckbox.addEventListener('change', updateChart);
 
-            // Initialize chart with both datasets
             blockedCheckbox.checked = true;
             activeCheckbox.checked = true;
             updateChart();
