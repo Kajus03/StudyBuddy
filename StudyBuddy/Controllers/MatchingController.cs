@@ -9,6 +9,7 @@ using StudyBuddy.Shared.ValueObjects;
 namespace StudyBuddy.Controllers;
 
 [CustomAuthorize]
+[CustomBlockAuthorize]
 public class MatchingController : Controller
 {
     private readonly ILogger<MatchingController> _logger;

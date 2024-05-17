@@ -1,13 +1,12 @@
 @model List<StudyBuddy.Controllers.AdminController.UserWithBlockStatus>
 @using StudyBuddy.Shared.Models
 
-
 @{
     Layout = "_AdminLayout";
-    ViewBag.Title = "Admin Dashboard";
 }
+
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Dashboard</title>
@@ -31,6 +30,20 @@
         }
     </style>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+    <style>
+        .modal-dialog-centered {
+            display: flex;
+            align-items: center;
+            min-height: calc(100% - 1rem);
+        }
+
+        .modal-content {
+            margin: auto;
+        }
+    </style>
 </head>
 <body>
     <div class="container">
@@ -70,10 +83,17 @@
                                 <td>@item.User.Id</td>
                                 <td>@(item.IsBlocked ? "Blocked" : "Active")</td>
                                 <td>
-                                    <button class="btn btn-warning">Block</button>
+                                    @if (item.IsBlocked)
+                                    {
+                                        <button onclick="askUnblockConfirm('@item.BlockId')" class="btn btn-success">Unblock</button>
+                                    }
+                                    else
+                                    {
+                                        <button onclick="askBlockReason('@item.User.Id')" class="btn btn-warning">Block</button>
+                                    }
                                     <button class="btn btn-danger">Delete</button>
                                 </td>
-                                <td class="duration-cell center-text">@(item.IsBlocked ? item.BlockedUntil?.ToString("G") ?? "-" : "-")</td>
+                                <td>@(item.IsBlocked ? (item.BlockedUntil.HasValue && item.BlockedUntil != DateTime.MinValue ? "Until " + @item.BlockedUntil.Value.ToString("yyyy-MM-dd") : "Indefinitely") : "-")</td>
                             </tr>
                         }
                     </tbody>
@@ -82,7 +102,146 @@
         </div>
     </div>
 
+    <div class="modal fade" id="blockReasonModal" tabindex="-1" role="dialog" aria-labelledby="blockReasonModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="blockReasonModalLabel">Enter Block Reason and Duration</h5>
+                    <button type="button" class="close" aria-label="Close" onclick="closeBlockReasonModal()">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <input type="text" class="form-control" id="blockReasonInput" placeholder="Reason for blocking">
+                    <div class="invalid-feedback">
+                        Please enter a reason for blocking.
+                    </div>
+                    <input type="date" class="form-control mt-2" id="blockUntilInput" placeholder="Block until (optional)" onchange="checkDate()">
+                    <div class="invalid-feedback" id="blockUntilError">
+                        Date cannot be in the past.
+                    </div>
+                    <div class="form-check mt-2">
+                        <input type="checkbox" class="form-check-input" id="indefiniteCheck" onchange="toggleIndefinite()">
+                        <label class="form-check-label" for="indefiniteCheck">Block Indefinitely</label>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" onclick="closeBlockReasonModal()">Cancel</button>
+                    <button type="button" class="btn btn-primary" onclick="submitBlock()">Block User</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="unblockConfirmModal" tabindex="-1" role="dialog" aria-labelledby="unblockConfirmModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="unblockConfirmModalLabel">Confirm Unblock</h5>
+                    <button type="button" class="close" aria-label="Close" onclick="closeUnblockConfirmModal()">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    Are you sure you want to unblock this user?
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" onclick="closeUnblockConfirmModal()">Cancel</button>
+                    <button type="button" class="btn btn-primary" onclick="submitUnblock()">Unblock User</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <script>
+        let currentUserId = 0;
+        let currentBlockId = 0;
+
+        function askBlockReason(userId) {
+            currentUserId = userId;
+            $('#blockReasonModal').modal('show');
+        }
+
+        function closeBlockReasonModal() {
+            currentUserId = 0;
+            document.getElementById('blockReasonInput').value = '';
+            document.getElementById('blockReasonInput').classList.remove('is-invalid');
+            document.getElementById('blockUntilInput').value = '';
+            document.getElementById('blockUntilInput').classList.remove('is-invalid');
+            document.getElementById('indefiniteCheck').checked = false;
+            document.getElementById('blockUntilInput').disabled = false;
+            $('#blockReasonModal').modal('hide');
+        }
+
+        function checkDate() {
+            const blockUntilInput = document.getElementById('blockUntilInput');
+            const blockUntil = new Date(blockUntilInput.value);
+
+            if (blockUntil < new Date()) {
+                blockUntilInput.classList.add('is-invalid');
+                document.getElementById('blockUntilError').style.display = 'block';
+            } else {
+                blockUntilInput.classList.remove('is-invalid');
+                document.getElementById('blockUntilError').style.display = 'none';
+            }
+        }
+
+        function toggleIndefinite() {
+            const blockUntilInput = document.getElementById('blockUntilInput');
+            if (document.getElementById('indefiniteCheck').checked) {
+                blockUntilInput.disabled = true;
+                blockUntilInput.value = '';
+                blockUntilInput.classList.remove('is-invalid');
+                document.getElementById('blockUntilError').style.display = 'none';
+            } else {
+                blockUntilInput.disabled = false;
+            }
+        }
+
+        function submitBlock() {
+            const reasonInput = document.getElementById('blockReasonInput');
+            const reason = reasonInput.value;
+            const blockUntilInput = document.getElementById('blockUntilInput');
+            const blockUntil = blockUntilInput.value ? new Date(blockUntilInput.value).toISOString() : null;
+
+            if (!reason) {
+                reasonInput.classList.add('is-invalid');
+                return;
+            }
+
+            if (!document.getElementById('indefiniteCheck').checked && blockUntil && new Date(blockUntilInput.value) < new Date()) {
+                blockUntilInput.classList.add('is-invalid');
+                document.getElementById('blockUntilError').style.display = 'block';
+                return;
+            }
+
+            reasonInput.classList.remove('is-invalid');
+            blockUntilInput.classList.remove('is-invalid');
+            document.getElementById('blockUntilError').style.display = 'none';
+            $('#blockReasonModal').modal('hide');
+
+            document.getElementById('blockFormUserId').value = currentUserId;
+            document.getElementById('blockFormReason').value = reason;
+            document.getElementById('blockFormUntil').value = document.getElementById('indefiniteCheck').checked ? null : blockUntil;
+            document.getElementById('blockForm').submit();
+        }
+
+        function askUnblockConfirm(blockId) {
+            currentBlockId = blockId;
+            $('#unblockConfirmModal').modal('show');
+        }
+
+        function closeUnblockConfirmModal() {
+            currentBlockId = 0;
+            $('#unblockConfirmModal').modal('hide');
+        }
+
+        function submitUnblock() {
+            $('#unblockConfirmModal').modal('hide');
+            document.getElementById('unblockFormBlockId').value = currentBlockId;
+            document.getElementById('unblockForm').submit();
+        }
+
         document.addEventListener('DOMContentLoaded', function () {
             const blockedCheckbox = document.getElementById('blockedUsers');
             const activeCheckbox = document.getElementById('activeUsers');
@@ -156,5 +315,15 @@
             updateChart();
         });
     </script>
+
+    <form id="blockForm" method="post" action="/Admin/BlockUser" style="display:none;">
+        <input type="hidden" id="blockFormUserId" name="BlockedUserId" />
+        <input type="hidden" id="blockFormReason" name="SystemBlockReason.Reason" />
+        <input type="hidden" id="blockFormUntil" name="BlockedUntil" />
+    </form>
+
+    <form id="unblockForm" method="post" action="/Admin/UnblockUser" style="display:none;">
+        <input type="hidden" id="unblockFormBlockId" name="blockId" />
+    </form>
 </body>
 </html>

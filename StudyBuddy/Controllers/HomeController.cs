@@ -1,5 +1,6 @@
 ﻿using System.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
+using StudyBuddy.Attributes;
 using StudyBuddy.Models;
 using StudyBuddy.Services.UserSessionService;
 using StudyBuddy.Shared.Abstractions;
@@ -7,6 +8,7 @@ using StudyBuddy.Shared.Models;
 
 namespace StudyBuddy.Controllers;
 
+[CustomBlockAuthorize]
 public class HomeController : Controller
 {
     private readonly ILogger<HomeController> _logger;
