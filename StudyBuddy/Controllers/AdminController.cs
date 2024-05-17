@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc;
 using StudyBuddy.Attributes;
 using StudyBuddy.Models;
 using StudyBuddy.Services.UserSessionService;
@@ -69,7 +69,6 @@ namespace StudyBuddy.Controllers
             public User User { get; set; }
             public bool IsBlocked { get; set; }
             public Guid BlockId { get; set; }
-
             public DateTime? BlockedUntil { get; set; }
         }
 

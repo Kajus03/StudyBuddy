@@ -6,20 +6,7 @@
 
 @{
     ViewData["Title"] = "Home Page";
-    var currentUserId = UserSessionService.GetCurrentUserId();
-    IUser? user = null;
-
-    if (currentUserId != null)
-    {
-        var httpClient = HttpClientFactory.CreateClient("StudyBuddy.API");
-
-        var responseUser = await httpClient.GetAsync($"api/v1/user/{currentUserId.Value}");
-
-        if (responseUser.IsSuccessStatusCode)
-        {
-            user = await responseUser.Content.ReadFromJsonAsync<User>();
-        }
-    }
+    var user = ViewBag.User as User;
 }
 
 <div class="container">
