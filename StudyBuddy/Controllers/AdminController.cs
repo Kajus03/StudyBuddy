@@ -61,7 +61,17 @@ namespace StudyBuddy.Controllers
                     BlockId = blocks.FirstOrDefault(b => b.BlockedUserId == user.Id)?.Id ?? Guid.Empty,
                     BlockedUntil = blocks.FirstOrDefault(b => b.BlockedUserId == user.Id)?.BlockedUntil ?? DateTime.MinValue
                 }).ToList();
-
+            // Unblock users if the block period has expired
+            foreach (var userWithStatus in usersWithStatus)
+            {
+                if (userWithStatus.IsBlocked && userWithStatus.BlockedUntil.HasValue && DateTime.Now >= userWithStatus.BlockedUntil.Value)
+                {
+                    await UnblockUser(userWithStatus.BlockId);
+                    userWithStatus.IsBlocked = false;
+                    userWithStatus.BlockId = Guid.Empty;
+                    userWithStatus.BlockedUntil = DateTime.MinValue;
+                }
+            }
             return View("AdminDashboard", usersWithStatus);
         }
 
