@@ -72,7 +72,7 @@
                                     }
                                     <button class="btn btn-danger">Delete</button>
                                 </td>
-                                <td>@(item.IsBlocked ? "Until " + @item.BlockedUntil?.ToString("yyyy-MM-dd") : "-")</td>
+                                <td>@(item.IsBlocked ? (item.BlockedUntil.HasValue && item.BlockedUntil != DateTime.MinValue ? "Until " + @item.BlockedUntil.Value.ToString("yyyy-MM-dd") : "Indefinitely") : "-")</td>
                             </tr>
                         }
                     </tbody>
@@ -95,7 +95,14 @@
                     <div class="invalid-feedback">
                         Please enter a reason for blocking.
                     </div>
-                    <input type="date" class="form-control mt-2" id="blockUntilInput" placeholder="Block until (optional)">
+                    <input type="date" class="form-control mt-2" id="blockUntilInput" placeholder="Block until (optional)" onchange="checkDate()">
+                    <div class="invalid-feedback" id="blockUntilError">
+                        Date cannot be in the past.
+                    </div>
+                    <div class="form-check mt-2">
+                        <input type="checkbox" class="form-check-input" id="indefiniteCheck" onchange="toggleIndefinite()">
+                        <label class="form-check-label" for="indefiniteCheck">Block Indefinitely</label>
+                    </div>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" onclick="closeBlockReasonModal()">Cancel</button>
@@ -104,7 +111,6 @@
             </div>
         </div>
     </div>
-
 
     <div class="modal fade" id="unblockConfirmModal" tabindex="-1" role="dialog" aria-labelledby="unblockConfirmModalLabel" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered" role="document">
@@ -139,7 +145,36 @@
             currentUserId = 0;
             document.getElementById('blockReasonInput').value = '';
             document.getElementById('blockReasonInput').classList.remove('is-invalid');
+            document.getElementById('blockUntilInput').value = '';
+            document.getElementById('blockUntilInput').classList.remove('is-invalid');
+            document.getElementById('indefiniteCheck').checked = false;
+            document.getElementById('blockUntilInput').disabled = false;
             $('#blockReasonModal').modal('hide');
+        }
+
+        function checkDate() {
+            const blockUntilInput = document.getElementById('blockUntilInput');
+            const blockUntil = new Date(blockUntilInput.value);
+
+            if (blockUntil < new Date()) {
+                blockUntilInput.classList.add('is-invalid');
+                document.getElementById('blockUntilError').style.display = 'block';
+            } else {
+                blockUntilInput.classList.remove('is-invalid');
+                document.getElementById('blockUntilError').style.display = 'none';
+            }
+        }
+
+        function toggleIndefinite() {
+            const blockUntilInput = document.getElementById('blockUntilInput');
+            if (document.getElementById('indefiniteCheck').checked) {
+                blockUntilInput.disabled = true;
+                blockUntilInput.value = '';
+                blockUntilInput.classList.remove('is-invalid');
+                document.getElementById('blockUntilError').style.display = 'none';
+            } else {
+                blockUntilInput.disabled = false;
+            }
         }
 
         function submitBlock() {
@@ -152,12 +187,21 @@
                 reasonInput.classList.add('is-invalid');
                 return;
             }
+
+            if (!document.getElementById('indefiniteCheck').checked && blockUntil && new Date(blockUntilInput.value) < new Date()) {
+                blockUntilInput.classList.add('is-invalid');
+                document.getElementById('blockUntilError').style.display = 'block';
+                return;
+            }
+
             reasonInput.classList.remove('is-invalid');
-            $('#blockReasonModal').modal('hide'); 
+            blockUntilInput.classList.remove('is-invalid');
+            document.getElementById('blockUntilError').style.display = 'none';
+            $('#blockReasonModal').modal('hide');
 
             document.getElementById('blockFormUserId').value = currentUserId;
             document.getElementById('blockFormReason').value = reason;
-            document.getElementById('blockFormUntil').value = blockUntil;
+            document.getElementById('blockFormUntil').value = document.getElementById('indefiniteCheck').checked ? null : blockUntil;
             document.getElementById('blockForm').submit();
         }
 
@@ -228,7 +272,6 @@
         <input type="hidden" id="blockFormReason" name="SystemBlockReason.Reason" />
         <input type="hidden" id="blockFormUntil" name="BlockedUntil" />
     </form>
-
 
     <form id="unblockForm" method="post" action="/Admin/UnblockUser" style="display:none;">
         <input type="hidden" id="unblockFormBlockId" name="blockId" />

@@ -33,7 +33,6 @@ namespace StudyBuddy.Controllers
         {
             var client = _httpClientFactory.CreateClient("StudyBuddy.API");
 
-            // Fetch users
             var userResponse = await client.GetAsync("/api/v1/user");
             if (!userResponse.IsSuccessStatusCode)
             {
@@ -77,8 +76,12 @@ namespace StudyBuddy.Controllers
         [HttpPost]
         public async Task<IActionResult> BlockUser(SystemBlockRequest blockRequest)
         {
-            HttpClient httpClient = _httpClientFactory.CreateClient("StudyBuddy.API");
+            if (!blockRequest.BlockedUntil.HasValue || blockRequest.BlockedUntil.Value <= DateTime.UtcNow)
+            {
+                blockRequest.BlockedUntil = null;
+            }
 
+            HttpClient httpClient = _httpClientFactory.CreateClient("StudyBuddy.API");
             var response = await httpClient.PostAsJsonAsync("/api/v1/admin", blockRequest);
 
             if (!response.IsSuccessStatusCode)
@@ -93,6 +96,7 @@ namespace StudyBuddy.Controllers
             TempData["SuccessMessage"] = "User blocked successfully";
             return RedirectToAction("Index");
         }
+
 
         [HttpPost]
         public async Task<IActionResult> UnblockUser(Guid blockId)
