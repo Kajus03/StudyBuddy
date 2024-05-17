@@ -72,7 +72,7 @@
                                     }
                                     <button class="btn btn-danger">Delete</button>
                                 </td>
-                                <td>-</td>
+                                <td>@(item.IsBlocked ? "Until " + @item.BlockedUntil?.ToString("yyyy-MM-dd") : "-")</td>
                             </tr>
                         }
                     </tbody>
@@ -81,12 +81,11 @@
         </div>
     </div>
 
-    <!-- Block Reason Modal -->
     <div class="modal fade" id="blockReasonModal" tabindex="-1" role="dialog" aria-labelledby="blockReasonModalLabel" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered" role="document">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="blockReasonModalLabel">Enter Block Reason</h5>
+                    <h5 class="modal-title" id="blockReasonModalLabel">Enter Block Reason and Duration</h5>
                     <button type="button" class="close" aria-label="Close" onclick="closeBlockReasonModal()">
                         <span aria-hidden="true">&times;</span>
                     </button>
@@ -96,6 +95,7 @@
                     <div class="invalid-feedback">
                         Please enter a reason for blocking.
                     </div>
+                    <input type="date" class="form-control mt-2" id="blockUntilInput" placeholder="Block until (optional)">
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" onclick="closeBlockReasonModal()">Cancel</button>
@@ -105,7 +105,7 @@
         </div>
     </div>
 
-    <!-- Unblock Confirm Modal -->
+
     <div class="modal fade" id="unblockConfirmModal" tabindex="-1" role="dialog" aria-labelledby="unblockConfirmModalLabel" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered" role="document">
             <div class="modal-content">
@@ -127,8 +127,8 @@
     </div>
 
     <script>
-        let currentUserId = 0; // Global variable to keep track of the user to block
-        let currentBlockId = 0; // Global variable to keep track of the block to unblock
+        let currentUserId = 0;
+        let currentBlockId = 0;
 
         function askBlockReason(userId) {
             currentUserId = userId;
@@ -145,14 +145,19 @@
         function submitBlock() {
             const reasonInput = document.getElementById('blockReasonInput');
             const reason = reasonInput.value;
+            const blockUntilInput = document.getElementById('blockUntilInput');
+            const blockUntil = blockUntilInput.value ? new Date(blockUntilInput.value).toISOString() : null;
+
             if (!reason) {
                 reasonInput.classList.add('is-invalid');
                 return;
             }
             reasonInput.classList.remove('is-invalid');
-            $('#blockReasonModal').modal('hide'); // Hide the modal after getting the input
+            $('#blockReasonModal').modal('hide'); 
+
             document.getElementById('blockFormUserId').value = currentUserId;
             document.getElementById('blockFormReason').value = reason;
+            document.getElementById('blockFormUntil').value = blockUntil;
             document.getElementById('blockForm').submit();
         }
 
@@ -167,7 +172,7 @@
         }
 
         function submitUnblock() {
-            $('#unblockConfirmModal').modal('hide'); // Hide the modal after confirming unblock
+            $('#unblockConfirmModal').modal('hide');
             document.getElementById('unblockFormBlockId').value = currentBlockId;
             document.getElementById('unblockForm').submit();
         }
@@ -221,7 +226,9 @@
     <form id="blockForm" method="post" action="/Admin/BlockUser" style="display:none;">
         <input type="hidden" id="blockFormUserId" name="BlockedUserId" />
         <input type="hidden" id="blockFormReason" name="SystemBlockReason.Reason" />
+        <input type="hidden" id="blockFormUntil" name="BlockedUntil" />
     </form>
+
 
     <form id="unblockForm" method="post" action="/Admin/UnblockUser" style="display:none;">
         <input type="hidden" id="unblockFormBlockId" name="blockId" />

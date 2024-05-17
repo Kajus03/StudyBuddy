@@ -58,7 +58,8 @@ namespace StudyBuddy.Controllers
                 {
                     User = user,
                     IsBlocked = blocks.Any(b => b.BlockedUserId == user.Id),
-                    BlockId = blocks.FirstOrDefault(b => b.BlockedUserId == user.Id)?.Id ?? Guid.Empty
+                    BlockId = blocks.FirstOrDefault(b => b.BlockedUserId == user.Id)?.Id ?? Guid.Empty,
+                    BlockedUntil = blocks.FirstOrDefault(b => b.BlockedUserId == user.Id)?.BlockedUntil ?? DateTime.MinValue
                 }).ToList();
 
             return View("AdminDashboard", usersWithStatus);
@@ -68,7 +69,9 @@ namespace StudyBuddy.Controllers
         {
             public User User { get; set; }
             public bool IsBlocked { get; set; }
-            public Guid BlockId { get; set; } 
+            public Guid BlockId { get; set; }
+
+            public DateTime? BlockedUntil { get; set; }
         }
 
         [HttpPost]
