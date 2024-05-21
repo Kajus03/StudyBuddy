@@ -109,7 +109,7 @@
                                     {
                                         <button onclick="askBlockReason('@item.User.Id')" class="btn btn-warning">Block</button>
                                     }
-                                    <button class="btn btn-danger">Delete</button>
+                                    <button onclick="askDeleteConfirm('@item.User.Id')" class="btn btn-danger">Delete</button>
                                 </td>
                                 <td>@(item.IsBlocked ? (item.BlockedUntil.HasValue && item.BlockedUntil != DateTime.MinValue ? "Until " + @item.BlockedUntil.Value.ToString("yyyy-MM-dd") : "Indefinitely") : "-")</td>
                             </tr>
@@ -168,6 +168,26 @@
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" onclick="closeUnblockConfirmModal()">Cancel</button>
                     <button type="button" class="btn btn-primary" onclick="submitUnblock()">Unblock User</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="deleteConfirmModal" tabindex="-1" role="dialog" aria-labelledby="deleteConfirmModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="deleteConfirmModalLabel">Confirm Delete</h5>
+                    <button type="button" class="close" aria-label="Close" onclick="closeDeleteConfirmModal()">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    Are you sure you want to delete this user?
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" onclick="closeDeleteConfirmModal()">Cancel</button>
+                    <button type="button" class="btn btn-danger" onclick="submitDelete()">Delete User</button>
                 </div>
             </div>
         </div>
@@ -262,6 +282,22 @@
             document.getElementById('unblockForm').submit();
         }
 
+        function askDeleteConfirm(userId) {
+            currentUserId = userId;
+            $('#deleteConfirmModal').modal('show');
+        }
+
+        function closeDeleteConfirmModal() {
+            currentUserId = 0;
+            $('#deleteConfirmModal').modal('hide');
+        }
+
+        function submitDelete() {
+            $('#deleteConfirmModal').modal('hide');
+            document.getElementById('deleteFormUserId').value = currentUserId;
+            document.getElementById('deleteForm').submit();
+        }
+
         document.addEventListener('DOMContentLoaded', function () {
             const blockedCheckbox = document.getElementById('blockedUsers');
             const activeCheckbox = document.getElementById('activeUsers');
@@ -343,6 +379,10 @@
 
     <form id="unblockForm" method="post" action="/Admin/UnblockUser" style="display:none;">
         <input type="hidden" id="unblockFormBlockId" name="blockId" />
+    </form>
+
+    <form id="deleteForm" method="post" action="/Admin/DeleteUser" style="display:none;">
+        <input type="hidden" id="deleteFormUserId" name="userId" />
     </form>
 </body>
 </html>
