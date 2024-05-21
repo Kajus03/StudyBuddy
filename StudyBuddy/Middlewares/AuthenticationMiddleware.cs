@@ -43,6 +43,7 @@ public class AuthenticationMiddleware
                     if (currentUser != null)
                     {
                         userSessionService.SetCurrentUser(currentUser.Id);
+                        userSessionService.SetCurrentUsername(currentUser.Username);
                     }
                 }
                 catch (JsonException)
@@ -54,6 +55,7 @@ public class AuthenticationMiddleware
             {
                 // Clear the "UserId" cookie if the user doesn't exist or there's an issue with the API call
                 context.Response.Cookies.Delete("UserId");
+                context.Response.Cookies.Delete("Username");
             }
         }
 

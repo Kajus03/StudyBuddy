@@ -9,6 +9,7 @@ using StudyBuddy.Shared.ValueObjects;
 namespace StudyBuddy.Controllers;
 
 [CustomAuthorize]
+[CustomBlockAuthorize]
 public class MatchingController : Controller
 {
     private readonly ILogger<MatchingController> _logger;
@@ -71,7 +72,7 @@ public class MatchingController : Controller
         responseUsers.EnsureSuccessStatusCode();
         List<User>? users = await responseUsers.Content.ReadFromJsonAsync<List<User>>();
 
-        List<User> allUsers = users.Where(u => u.Id != currentUser.Id).ToList();
+        List<User> allUsers = users.Where(u => u.Id != currentUser.Id && (u.Flags & UserFlags.Admin) != UserFlags.Admin).ToList();
 
         bool useHobbiesFilter = currentUser.Hobbies != null && currentUser.Hobbies.Any();
 

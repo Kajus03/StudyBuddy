@@ -7,6 +7,5 @@ public enum UserFlags : byte
     Unregistered = 0x2,
     Registered = 0x4,
     Banned = 0x8,
-
-    Admin = 0x80
+    Admin = 0x10
 }

@@ -403,3 +403,8 @@ FodyWeavers.xsd
 # Environment configuration
 # I know how it looks. Im Sorry I'm in a rush and I'd set up variables on gitlab if this were inportant and if I had time
 # .env
+/StudyBuddy.API/Data/Migrations/20240324125541_new.cs
+/StudyBuddy.API/Data/Migrations/20240324125541_new.Designer.cs
+/StudyBuddy.API/Data/Migrations/20240514191619_migracija.cs
+/StudyBuddy.API/Data/Migrations/20240514191619_migracija.Designer.cs
+/StudyBuddy.API/Data/Migrations
