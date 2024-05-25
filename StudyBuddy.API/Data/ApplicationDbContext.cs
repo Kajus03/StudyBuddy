@@ -51,13 +51,13 @@ public class StudyBuddyDbContext : DbContext
             .HasOne<User>()
             .WithMany()
             .HasForeignKey(m => m.User1Id)
-            .OnDelete(DeleteBehavior.Restrict);
+            .OnDelete(DeleteBehavior.Cascade);
 
         modelBuilder.Entity<Match>()
             .HasOne<User>()
             .WithMany()
             .HasForeignKey(m => m.User2Id)
-            .OnDelete(DeleteBehavior.Restrict);
+            .OnDelete(DeleteBehavior.Cascade);
 
         modelBuilder.Entity<Match>()
             .HasIndex(m => new { m.User1Id, m.User2Id })
