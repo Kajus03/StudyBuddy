@@ -59,7 +59,7 @@ namespace StudyBuddy.Controllers
                     User = user,
                     IsBlocked = blocks.Any(b => b.BlockedUserId == user.Id),
                     BlockId = blocks.FirstOrDefault(b => b.BlockedUserId == user.Id)?.Id ?? Guid.Empty,
-                    BlockedUntil = blocks.FirstOrDefault(b => b.BlockedUserId == user.Id)?.BlockedUntil ?? DateTime.MinValue
+                    BlockedUntil = blocks.FirstOrDefault(b => b.BlockedUserId == user.Id)?.BlockedUntil
                 }).ToList();
             // Unblock users if the block period has expired
             foreach (var userWithStatus in usersWithStatus)
@@ -98,10 +98,12 @@ namespace StudyBuddy.Controllers
             {
                 var errorContent = await response.Content.ReadAsStringAsync();
                 _logger.LogError("Failed to block user: {Content}", errorContent);
+                TempData["ErrorMessage"] = "Failed to block user.";
                 return RedirectToAction("Index");
             }
 
             _logger.LogInformation("User blocked successfully: {UserId}", blockRequest.BlockedUserId);
+            TempData["SuccessMessage"] = "User blocked successfully.";
             return RedirectToAction("Index");
         }
 
@@ -116,10 +118,31 @@ namespace StudyBuddy.Controllers
             {
                 var errorContent = await response.Content.ReadAsStringAsync();
                 _logger.LogError("Failed to unblock user: {Content}", errorContent);
+                TempData["ErrorMessage"] = "Failed to unblock user.";
                 return RedirectToAction("Index");
             }
 
             _logger.LogInformation("User unblocked successfully: {BlockId}", blockId);
+            TempData["SuccessMessage"] = "User unblocked successfully.";
+            return RedirectToAction("Index");
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> DeleteUser(Guid userId)
+        {
+            HttpClient httpClient = _httpClientFactory.CreateClient("StudyBuddy.API");
+            var response = await httpClient.DeleteAsync($"/api/v1/admin/user/{userId}");
+
+            if (!response.IsSuccessStatusCode)
+            {
+                var errorContent = await response.Content.ReadAsStringAsync();
+                _logger.LogError("Failed to delete user: {Content}", errorContent);
+                TempData["ErrorMessage"] = "Failed to delete user.";
+                return RedirectToAction("Index");
+            }
+
+            _logger.LogInformation("User deleted successfully: {UserId}", userId);
+            TempData["SuccessMessage"] = "User deleted successfully.";
             return RedirectToAction("Index");
         }
     }
