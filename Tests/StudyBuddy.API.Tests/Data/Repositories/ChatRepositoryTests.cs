@@ -12,7 +12,7 @@ namespace StudyBuddyTests.Data.Repositories;
 
 public class ChatRepositoryTests
 {
-    private StudyBuddyDbContext _dbContext;
+    private readonly StudyBuddyDbContext _dbContext;
     private readonly ILogger<ChatRepository> _logger;
     private readonly ChatRepository _sut;
 
