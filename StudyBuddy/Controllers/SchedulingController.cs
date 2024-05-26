@@ -5,6 +5,7 @@ using StudyBuddy.Shared.ValueObjects;
 
 namespace StudyBuddy.Controllers;
 
+[CustomBlockAuthorize]
 public class SchedulingController : Controller
 {
     private readonly IUserSessionService _userSessionService;

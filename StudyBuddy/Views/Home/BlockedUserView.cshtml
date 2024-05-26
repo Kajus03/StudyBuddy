@@ -1,0 +1,22 @@
+﻿@{
+    Layout = "_BlockedLayout";
+    ViewBag.Title = "Blocked User";
+}
+
+<div class="container d-flex flex-column justify-content-center align-items-center" style="height: 60vh;">
+     <div class="text-center">
+        <h1 class="display-4">You have been blocked.</h1>
+        <p class="lead">
+            @if (ViewData["BlockReason"] != null)
+            {
+                <span>Your account was suspended for: <strong>@ViewData["BlockReason"]</strong></span>
+            }
+        </p>
+        <p class="lead">
+            @if(ViewData["BlockTime"] != null){
+                <span>You are blocked until: <strong>@ViewData["BlockTime"]</strong></span>
+            }
+        </p>
+        <p class="lead">Please contact the administrator for more details.</p>
+    </div>
+</div>

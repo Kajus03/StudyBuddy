@@ -15,15 +15,22 @@ if (builder.Environment.IsDevelopment())
 builder.Services.AddHttpClient("StudyBuddy.API", client =>
 {
     // For production
+<<<<<<< c8819a5ee36c1e4a36500b273f7788ebc92da5ed
     // client.BaseAddress = new Uri("http://studybuddy.api:80/");
     // For local development
     client.BaseAddress = new Uri("http://localhost:5100");
+=======
+   client.BaseAddress = new Uri("http://studybuddy.api:80/");
+    // For local development
+    //client.BaseAddress = new Uri("http://localhost:5100");
+>>>>>>> 9c392ed082ecdff5dad6106e575c4bbdb697933c
 });
 
 builder.Services.AddMvc();
 builder.Services.AddSignalR();
 
 builder.Services.AddScoped<CustomAuthorizeAttribute>();
+builder.Services.AddScoped<CustomBlockAuthorizeAttribute>();
 
 builder.Services.AddScoped<IUserSessionService, UserSessionService>();
 
